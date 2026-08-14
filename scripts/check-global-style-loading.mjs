@@ -70,6 +70,15 @@ const pages = [
 	{
 		name: "Homepage",
 		htmlPath: "index.html",
+		requiredMarkup: [["card-github", "rendered GitHub repository card"]],
+		requiredRules: [
+			[".card-github", "GitHub repository card styles"],
+			[".custom-md .image-grid", "extended Markdown layout styles"],
+		],
+	},
+	{
+		name: "Posts page",
+		htmlPath: "posts/index.html",
 		requiredMarkup: [],
 		requiredRules: [
 			["--page-bg:", "page background variable"],
@@ -77,15 +86,6 @@ const pages = [
 			["--radius-large:", "shared radius variable"],
 			["#banner-carousel", "banner layout styles"],
 			[".widget-container", "responsive widget styles"],
-		],
-	},
-	{
-		name: "About page",
-		htmlPath: "about/index.html",
-		requiredMarkup: [["card-github", "rendered GitHub repository card"]],
-		requiredRules: [
-			[".card-github", "GitHub repository card styles"],
-			[".custom-md .image-grid", "extended Markdown layout styles"],
 		],
 	},
 ];
