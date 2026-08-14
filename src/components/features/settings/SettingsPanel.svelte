@@ -1,5 +1,9 @@
 <script lang="ts">
 import {
+	DARK_MODE,
+	DEFAULT_THEME,
+	LIGHT_MODE,
+	SYSTEM_MODE,
 	WALLPAPER_BANNER,
 	WALLPAPER_FULLSCREEN,
 	WALLPAPER_NONE,
@@ -26,6 +30,7 @@ import {
 	getStoredUltrawidePostLayout,
 	getStoredWallpaperMode,
 	getStoredWavesEnabled,
+	getStoredTheme,
 	setBannerTitleEnabled,
 	setHue,
 	setOverlayBlur,
@@ -35,6 +40,7 @@ import {
 	setUltrawidePostLayout,
 	setWallpaperMode,
 	setWavesEnabled,
+	setTheme,
 } from "@utils/setting-utils";
 import { onMount } from "svelte";
 import { fullscreenWallpaperConfig, sakuraConfig, siteConfig } from "@/config";
@@ -98,17 +104,14 @@ const isWallpaperModeSwitchable = $derived(
 );
 
 const hasAnyContent = $derived(
-	showThemeColor ||
-		isWallpaperModeSwitchable ||
-		allowLayoutSwitch ||
-		hasOverlaySettings ||
-		hasBannerSettings ||
-		isSakuraSwitchable ||
-		isUltrawidePostLayoutSwitchable,
+	true, // 主题模式切换始终显示
 );
 
 let hue = $state(getHue());
 const defaultHue = getDefaultHue();
+let themeMode = $state(DEFAULT_THEME);
+const defaultThemeMode = DEFAULT_THEME;
+let isChangingTheme = false;
 let wallpaperMode = $state(defaultWallpaperMode as WALLPAPER_MODE);
 let currentLayout = $state(defaultLayout);
 let overlayOpacity = $state(getDefaultOverlayOpacity());
@@ -141,6 +144,26 @@ let bannerSettingsIsDefault = $derived(
 function resetHue() {
 	hue = defaultHue;
 	requestAnimationFrame(refreshAllRangeProgress);
+}
+
+function resetThemeMode() {
+	themeMode = defaultThemeMode;
+	setTheme(defaultThemeMode);
+}
+
+function switchThemeMode(newMode: typeof LIGHT_MODE | typeof DARK_MODE | typeof SYSTEM_MODE) {
+	if (isChangingTheme) {
+		return;
+	}
+
+	isChangingTheme = true;
+	themeMode = newMode;
+	setTheme(newMode);
+
+	// 防止过渡期间重复触发 startViewTransition
+	setTimeout(() => {
+		isChangingTheme = false;
+	}, 300);
 }
 
 function resetWallpaperMode() {
@@ -254,6 +277,7 @@ function checkMobile() {
 }
 
 onMount(() => {
+	themeMode = getStoredTheme();
 	wallpaperMode = getStoredWallpaperMode();
 	overlayOpacity = getStoredOverlayOpacity();
 	overlayBlur = getStoredOverlayBlur();
@@ -317,6 +341,67 @@ $effect(() => {
 	class="float-panel float-panel-closed absolute transition-all w-80 right-4 px-4 py-2"
 	class:list={[className]}
 >
+	<div class="mt-2 mb-2">
+		<div class="flex flex-row gap-2 mb-2 items-center justify-between">
+			<div
+				class="flex gap-2 font-bold text-lg text-neutral-900 dark:text-neutral-100 transition relative ml-3
+				before:w-1 before:h-4 before:rounded-md before:bg-(--primary)
+				before:absolute before:-left-3 before:top-1/2 before:-translate-y-1/2"
+			>
+				{i18n(I18nKey.settingsThemeMode)}
+				<button
+					aria-label="Reset to Default"
+					class="btn-regular w-7 h-7 rounded-md active:scale-90"
+					class:opacity-0={themeMode === defaultThemeMode}
+					class:pointer-events-none={themeMode === defaultThemeMode}
+					onclick={resetThemeMode}
+				>
+					<div class="text-(--btn-content)">
+						<Icon icon="material-symbols:refresh" class="text-[0.875rem]" />
+					</div>
+				</button>
+			</div>
+		</div>
+		<div class="space-y-1">
+			<button
+				class="w-full btn-regular rounded-md py-2 px-3 flex items-center gap-3 text-left active:scale-95 transition-all relative overflow-hidden"
+				class:opacity-60={themeMode !== LIGHT_MODE}
+				class:bg-(--btn-regular-bg-hover)={themeMode === LIGHT_MODE}
+				onclick={() => switchThemeMode(LIGHT_MODE)}
+			>
+				<Icon icon="material-symbols:wb-sunny-outline-rounded" class="text-[1.25rem] shrink-0" />
+				<span class="text-sm flex-1">{i18n(I18nKey.themeLight)}</span>
+				{#if themeMode === LIGHT_MODE}
+					<Icon icon="material-symbols:check-circle" class="text-[1rem] shrink-0 text-(--primary)" />
+				{/if}
+			</button>
+			<button
+				class="w-full btn-regular rounded-md py-2 px-3 flex items-center gap-3 text-left active:scale-95 transition-all relative overflow-hidden"
+				class:opacity-60={themeMode !== DARK_MODE}
+				class:bg-(--btn-regular-bg-hover)={themeMode === DARK_MODE}
+				onclick={() => switchThemeMode(DARK_MODE)}
+			>
+				<Icon icon="material-symbols:dark-mode-outline-rounded" class="text-[1.25rem] shrink-0" />
+				<span class="text-sm flex-1">{i18n(I18nKey.themeDark)}</span>
+				{#if themeMode === DARK_MODE}
+					<Icon icon="material-symbols:check-circle" class="text-[1rem] shrink-0 text-(--primary)" />
+				{/if}
+			</button>
+			<button
+				class="w-full btn-regular rounded-md py-2 px-3 flex items-center gap-3 text-left active:scale-95 transition-all relative overflow-hidden"
+				class:opacity-60={themeMode !== SYSTEM_MODE}
+				class:bg-(--btn-regular-bg-hover)={themeMode === SYSTEM_MODE}
+				onclick={() => switchThemeMode(SYSTEM_MODE)}
+			>
+				<Icon icon="material-symbols:brightness-medium-rounded" class="text-[1.25rem] shrink-0" />
+				<span class="text-sm flex-1">{i18n(I18nKey.themeSystem)}</span>
+				{#if themeMode === SYSTEM_MODE}
+					<Icon icon="material-symbols:check-circle" class="text-[1rem] shrink-0 text-(--primary)" />
+				{/if}
+			</button>
+		</div>
+	</div>
+
 	{#if showThemeColor}
 		<div class="mt-2 mb-2">
 			<div class="flex flex-row gap-2 mb-2 items-center justify-between">
