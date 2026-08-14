@@ -42,6 +42,13 @@ const {
 	showWave = siteConfig.banner.waves?.enable ?? true,
 } = Astro.props;
 
+// 首页文字入场动画配置
+const entrance = siteConfig.banner.homeText?.entranceAnimation;
+const titleAnimation =
+	`fadeInUp ${entrance?.titleDuration ?? 1000}ms ease-out ${entrance?.titleDelay ?? 0}ms both`;
+const subtitleAnimation =
+	`fadeInUp ${entrance?.subtitleDuration ?? 1000}ms ease-out ${entrance?.subtitleDelay ?? 300}ms both`;
+
 // 标准化图片数组
 const normalizeToArray = (images: string | string[]): string[] =>
 	Array.isArray(images) ? images : [images];
@@ -600,12 +607,18 @@ const bannerFormats = getImageFormats();
 			<div class="w-4/5 lg:w-3/4 text-center mb-0">
 				<div class="flex flex-col">
 					{overlayTitle && (
-						<h1 class="banner-title text-6xl lg:text-8xl text-white drop-shadow-lg mb-2 lg:mb-4">
+						<h1
+							class="banner-title text-6xl lg:text-8xl text-white drop-shadow-lg mb-2 lg:mb-4"
+							style={`animation: ${titleAnimation}`}
+						>
 							{overlayTitle}
 						</h1>
 					)}
 					{overlaySubtitle && (
-						<h2 class="banner-subtitle text-xl lg:text-3xl text-white/90 drop-shadow-md">
+						<h2
+							class="banner-subtitle text-xl lg:text-3xl text-white/90 drop-shadow-md"
+							style={`animation: ${subtitleAnimation}`}
+						>
 							<span class="inline-block min-h-[1.2em]">
 								{typewriter && Array.isArray(overlaySubtitle) ? (
 									<TypewriterText
@@ -739,13 +752,11 @@ const bannerFormats = getImageFormats();
 	/* Banner 文本样式 */
 	.banner-title {
 		text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-		animation: fadeInUp 1s ease-out;
 		font-weight: bold;
 	}
 
 	.banner-subtitle {
 		text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
-		animation: fadeInUp 1s ease-out 0.3s both;
 		min-height: 1.5em;
 		line-height: 1.2;
 	}

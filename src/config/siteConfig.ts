@@ -184,12 +184,19 @@ export const siteConfig: SiteConfig = {
 				"相位不规范,死法安德森",
 				"但是话又说回来了",
 			],
-			typewriter: {
+typewriter: {
 				enable: true, // 启用副标题打字机效果
 
 				speed: 75, // 打字速度（毫秒）
 				deleteSpeed: 50, // 删除速度（毫秒）
 				pauseTime: 1750, // 完全显示后的暂停时间（毫秒）
+			},
+
+			entranceAnimation: {
+				titleDuration: 500, // 标题入场动画时长（毫秒）
+				titleDelay: 0, // 标题入场动画延迟（毫秒）
+				subtitleDuration: 500, // 副标题入场动画时长（毫秒）
+				subtitleDelay: 100, // 副标题入场动画延迟（毫秒）
 			},
 		},
 

@@ -148,6 +148,13 @@ export interface SiteConfig {
 				pauseTime: number;
 			};
 			switchable?: boolean;
+			// 标题/副标题入场动画时长与延迟（毫秒）
+			entranceAnimation?: {
+				titleDuration: number;
+				titleDelay: number;
+				subtitleDuration: number;
+				subtitleDelay: number;
+			};
 		};
 		credit: {
 			enable: boolean;
