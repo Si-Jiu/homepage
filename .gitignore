@@ -65,3 +65,7 @@ src/data/bilibili-data.json
 *.psd~
 *.cmo3
 *.vtube.json
+
+/src/assets/public/
+/src/assets/music/cover/
+/src/assets/fonts/*.woff2

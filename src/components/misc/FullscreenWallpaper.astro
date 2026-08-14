@@ -3,6 +3,7 @@ import Image from "@components/atoms/Image/Image.astro";
 import { siteConfig } from "../../config";
 import type { FullscreenWallpaperConfig } from "../../types/config";
 import { getImageFormats, getImageQuality } from "../../utils/image-utils";
+import { expandImageDirectoryPaths } from "../../utils/image-source-utils";
 
 interface Props {
 	config: FullscreenWallpaperConfig;
@@ -29,16 +30,13 @@ const getImageSources = async () => {
 		}
 	}
 
-	const toArray = (src: string | string[] | undefined): string[] =>
-		Array.isArray(src) ? src : typeof src === "string" ? [src] : [];
-
 	if (
 		typeof srcConfig === "object" &&
 		srcConfig !== null &&
 		!Array.isArray(srcConfig)
 	) {
-		const desktop = toArray(srcConfig.desktop);
-		const mobile = toArray(srcConfig.mobile);
+		const desktop = expandImageDirectoryPaths(srcConfig.desktop);
+		const mobile = expandImageDirectoryPaths(srcConfig.mobile);
 		return {
 			desktop: desktop.length > 0 ? desktop : mobile,
 			mobile: mobile.length > 0 ? mobile : desktop,
@@ -46,7 +44,7 @@ const getImageSources = async () => {
 	}
 
 	// 如果是字符串或字符串数组，同时用于桌面端和移动端
-	const allImages = toArray(srcConfig as string | string[]);
+	const allImages = expandImageDirectoryPaths(srcConfig as string | string[]);
 	return { desktop: allImages, mobile: allImages };
 };
 

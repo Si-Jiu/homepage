@@ -4,6 +4,7 @@
  */
 import type { SiteConfig } from "../types/config";
 import type { widgetManager } from "./widget-manager";
+import { expandImageDirectoryPaths } from "./image-source-utils";
 
 /**
  * Banner 图片配置
@@ -231,14 +232,14 @@ export async function getBannerImages(
 			mobile?: string | string[];
 		};
 		return {
-			desktop: srcObj.desktop || srcObj.mobile || "",
-			mobile: srcObj.mobile || srcObj.desktop || "",
+			desktop: expandImageDirectoryPaths(srcObj.desktop || srcObj.mobile),
+			mobile: expandImageDirectoryPaths(srcObj.mobile || srcObj.desktop),
 		};
 	}
 	// 如果是字符串或字符串数组，同时用于桌面端和移动端
 	return {
-		desktop: bannerSrc as string | string[],
-		mobile: bannerSrc as string | string[],
+		desktop: expandImageDirectoryPaths(bannerSrc as string | string[]),
+		mobile: expandImageDirectoryPaths(bannerSrc as string | string[]),
 	};
 }
 
