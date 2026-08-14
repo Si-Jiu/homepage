@@ -1,4 +1,4 @@
-import { DARK_MODE, DEFAULT_THEME, LIGHT_MODE } from "@constants/constants";
+import { DARK_MODE, DEFAULT_THEME, LIGHT_MODE, SYSTEM_MODE } from "@constants/constants";
 
 import { fullscreenWallpaperConfig, sakuraConfig, siteConfig } from "@/config";
 import type { LIGHT_DARK_MODE, WALLPAPER_MODE } from "@/types/config";
@@ -38,6 +38,14 @@ export function applyThemeToDocument(theme: LIGHT_DARK_MODE) {
 			break;
 		case DARK_MODE:
 			targetIsDark = true;
+			break;
+		case SYSTEM_MODE:
+			const darkModeMql = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+			if (darkModeMql && darkModeMql.matches) {
+				targetIsDark = true;
+			} else {
+				targetIsDark = false;
+			}
 			break;
 		default:
 			targetIsDark = currentIsDark;

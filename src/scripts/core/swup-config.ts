@@ -93,6 +93,7 @@ export const THEME_CONFIG = {
 	// 主题值
 	lightMode: "light",
 	darkMode: "dark",
+	systemMode: "system",
 
 	// Expressive Code 主题映射
 	lightExpressiveTheme: "github-light",

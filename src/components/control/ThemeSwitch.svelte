@@ -1,12 +1,12 @@
 <script lang="ts">
-import { DARK_MODE, DEFAULT_THEME, LIGHT_MODE } from "@constants/constants";
+import { DARK_MODE, DEFAULT_THEME, LIGHT_MODE, SYSTEM_MODE } from "@constants/constants";
 import Icon from "@iconify/svelte";
 import { getStoredTheme, setTheme } from "@utils/setting-utils";
 import { onMount } from "svelte";
 
 import type { LIGHT_DARK_MODE } from "@/types/config.ts";
 
-const seq: LIGHT_DARK_MODE[] = [LIGHT_MODE, DARK_MODE];
+const seq: LIGHT_DARK_MODE[] = [LIGHT_MODE, DARK_MODE, SYSTEM_MODE];
 let mode: LIGHT_DARK_MODE = $state(DEFAULT_THEME);
 let isChanging = false;
 
@@ -101,6 +101,16 @@ function toggleScheme() {
 	>
 		<Icon
 			icon="material-symbols:dark-mode-outline-rounded"
+			class="text-[1.25rem]"
+		></Icon>
+	</div>
+	<div
+		class="absolute transition-all duration-300 ease-in-out"
+		class:opacity-0={mode !== SYSTEM_MODE}
+		class:rotate-180={mode !== SYSTEM_MODE}
+	>
+		<Icon
+			icon="material-symbols:brightness-medium-rounded"
 			class="text-[1.25rem]"
 		></Icon>
 	</div>

@@ -12,6 +12,7 @@ import {
 	DARK_MODE,
 	DEFAULT_THEME,
 	LIGHT_MODE,
+	SYSTEM_MODE,
 } from "../../constants/constants";
 import { defaultFavicons } from "../../constants/icon";
 import type { Favicon } from "../../types/config";
@@ -107,6 +108,7 @@ const favicons: Favicon[] =
 		DEFAULT_THEME,
 		LIGHT_MODE,
 		DARK_MODE,
+		SYSTEM_MODE,
 		BANNER_HEIGHT_EXTEND: 30,
 		configHue,
 		themeColorFixed: siteConfig.themeColor.fixed ?? false,
@@ -129,6 +131,16 @@ const favicons: Favicon[] =
 			document.documentElement.classList.add("dark");
 			isDark = true;
 			break;
+		case SYSTEM_MODE:
+			const darkModeMql = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+			if (darkModeMql && darkModeMql.matches) {
+				document.documentElement.classList.add("dark");
+				isDark = true;
+			} else {
+				document.documentElement.classList.remove("dark");
+				isDark = false;
+			}
+			break;
 	}
 
 	// Set the theme for Expressive Code based on current mode
@@ -150,6 +162,22 @@ const favicons: Favicon[] =
 		"--banner-height-extend",
 		`${offset}px`,
 	);
+
+	// 监听系统主题变化（仅在 system 模式下生效）
+	const systemThemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+	systemThemeQuery.addEventListener("change", () => {
+		const current = localStorage.getItem("theme") || DEFAULT_THEME;
+		if (current === SYSTEM_MODE || !current) {
+			const isDark = systemThemeQuery.matches;
+			if (isDark) {
+				document.documentElement.classList.add("dark");
+				document.documentElement.setAttribute("data-theme", "github-dark");
+			} else {
+				document.documentElement.classList.remove("dark");
+				document.documentElement.setAttribute("data-theme", "github-light");
+			}
+		}
+	});
 
 	// 超宽屏文章布局。在首帧前落到 <html> 上，避免布局闪烁。
 	(function () {
