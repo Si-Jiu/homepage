@@ -5,7 +5,7 @@ const SITE_LANG = "zh_CN"; // 语言代码，例如：'en', 'zh_CN', 'ja' 等。
 
 export const siteConfig: SiteConfig = {
 	title: "肆鸠的主页",
-	subtitle: "终于有人看了 AWA",
+	subtitle: "终于有人看了AWA",
 	siteURL: "https://sijiu49.moe/", // 请替换为你的站点URL，以斜杠结尾
 	siteStartDate: "2025-04-01", // 站点开始运行日期，用于站点统计组件计算运行天数
 	timeZone: "Asia/Shanghai", // 文章日期使用的 IANA 时区，可改为 Asia/Tokyo、Europe/Berlin 等
@@ -152,22 +152,44 @@ export const siteConfig: SiteConfig = {
 
 		homeText: {
 			enable: true,
-			title: "わたしの部屋",
+			title: "肆鸠的主页",
 			switchable: true,
 
 			subtitle: [
-				"特別なことはないけど、君がいると十分です",
-				"今でもあなたは私の光",
-				"君ってさ、知らないうちに私の毎日になってたよ",
-				"君と話すと、なんか毎日がちょっと楽しくなるんだ",
-				"今日はなんでもない日。でも、ちょっとだけいい日",
+				"终于有人看了QWQ",
+				"Ciallo～(∠・ω< )⌒★",
+				"柚子厨真恶心🤮",
+				"还是PVP大佬",
+				"Attention, this announcement s-SYSTEM NOW UNDER MILITARY COMMAND",
+				"我问你我能不能大声说话！😡",
+				"UIU黑完之后是无规则状态",
+				"他们站的太密集了",
+				"现在他在恶意开庭",
+				"mumu学长的恩情还不完😭",
+				"huzuo学长的恩情还不完😭",
+				"Raslo的恩情还不完😭",
+				"Never gonna give you up~",
+				"Never gonna let you down~",
+				"还是PVP大佬",
+				"我是高性能的嘛！",
+				"我们西方国家的朋友们",
+				"要为可耻共谋刺杀金杰而",
+				"作！出！回！答！",
+				"What was you mission in Shanghai!",
+				"做个文明中国人",
+				"掉皮掉肉不掉队！",
+				"我们安全了……暂时。",
+				"Time Limit Exceeded",
+				"EDD mounted, let them come!",
+				"相位不规范,死法安德森",
+				"但是话又说回来了",
 			],
 			typewriter: {
 				enable: true, // 启用副标题打字机效果
 
-				speed: 100, // 打字速度（毫秒）
+				speed: 75, // 打字速度（毫秒）
 				deleteSpeed: 50, // 删除速度（毫秒）
-				pauseTime: 2000, // 完全显示后的暂停时间（毫秒）
+				pauseTime: 1750, // 完全显示后的暂停时间（毫秒）
 			},
 		},
 
@@ -188,7 +210,7 @@ export const siteConfig: SiteConfig = {
 		desktopSidebar: true, // 电脑端右侧边栏 TOC
 		floating: true, // 悬浮 TOC 按钮
 		depth: 2, // 目录深度，1-6，1 表示只显示 h1 标题，2 表示显示 h1 和 h2 标题，依此类推
-		useJapaneseBadge: true, // 使用日语假名标记（あいうえお...）代替数字，开启后会将 1、2、3... 改为 あ、い、う...
+		useJapaneseBadge: false, // 使用日语假名标记（あいうえお...）代替数字，开启后会将 1、2、3... 改为 あ、い、う...
 	},
 	showCoverInContent: true, // 在文章内容页显示文章封面
 	generateOgImages: false, // 启用生成OpenGraph图片功能,注意开启后要渲染很长时间，不建议本地调试的时候开启

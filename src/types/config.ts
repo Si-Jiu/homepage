@@ -210,6 +210,7 @@ export enum LinkPreset {
 	Skills = 8,
 	Timeline = 9,
 	AITools = 10,
+	Devices = 11,
 }
 
 export interface NavBarLink {
