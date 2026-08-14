@@ -63,5 +63,9 @@ export const LinkPresets: Record<LinkPreset, NavBarLink> = {
 		name: i18n(I18nKey.devices),
 		url: "/devices/",
 		icon: "material-symbols:devices",
+	},[LinkPreset.Posts]: {
+		name: i18n(I18nKey.posts),
+		url: "/posts/",
+		icon: "material-symbols:article",
 	},
 };

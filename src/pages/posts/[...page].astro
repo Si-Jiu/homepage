@@ -10,6 +10,9 @@ import { PAGE_SIZE } from "@/constants/constants";
 import { getSortedPosts } from "@/utils/content-utils";
 import { initPostIdMap } from "@/utils/permalink-utils";
 
+import I18nKey from "@/i18n/i18nKey";
+import { i18n } from "@/i18n/translation";
+
 const showCategoryBar = siteConfig.postListLayout.categoryBar?.enable ?? false;
 
 export const getStaticPaths = (async ({ paginate }) => {
@@ -25,7 +28,7 @@ const { page } = Astro.props;
 const len = page.data.length;
 ---
 
-<MainGridLayout>
+<MainGridLayout title={i18n(I18nKey.posts)}>
 	{showCategoryBar && <CategoryBar />}
 	<PostPage page={page} />
 	<Pagination

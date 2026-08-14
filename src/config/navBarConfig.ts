@@ -129,6 +129,7 @@ import { LinkPreset } from "../types/config";
 export const navBarConfig: NavBarConfig = {
 	links: [
 		LinkPreset.Home,
+		LinkPreset.Posts,
 		LinkPreset.Archive,
 		LinkPreset.Friends,
 		LinkPreset.Devices,

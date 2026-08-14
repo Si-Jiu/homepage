@@ -211,6 +211,7 @@ export enum LinkPreset {
 	Timeline = 9,
 	AITools = 10,
 	Devices = 11,
+	Posts = 12,
 }
 
 export interface NavBarLink {
