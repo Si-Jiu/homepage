@@ -5,10 +5,10 @@ import PostPage from "@components/features/posts/PostPage.astro";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 import type { GetStaticPaths } from "astro";
 
-import { siteConfig } from "../config";
-import { PAGE_SIZE } from "../constants/constants";
-import { getSortedPosts } from "../utils/content-utils";
-import { initPostIdMap } from "../utils/permalink-utils";
+import { siteConfig } from "@/config";
+import { PAGE_SIZE } from "@/constants/constants";
+import { getSortedPosts } from "@/utils/content-utils";
+import { initPostIdMap } from "@/utils/permalink-utils";
 
 const showCategoryBar = siteConfig.postListLayout.categoryBar?.enable ?? false;
 

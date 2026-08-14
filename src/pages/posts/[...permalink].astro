@@ -35,7 +35,7 @@ import { licenseConfig } from "src/config";
 
 import { permalinkConfig } from "@/config";
 
-import { profileConfig, siteConfig } from "../config";
+import { profileConfig, siteConfig } from "@/config";
 
 export async function getStaticPaths() {
 	const blogEntries = await getSortedPosts();
@@ -134,7 +134,7 @@ const jsonLd = {
 		set:html={JSON.stringify(jsonLd)}
 	/>
 	<script>
-		import("../scripts/right-sidebar-layout.js");
+		import("@/scripts/right-sidebar-layout.js");
 	</script>
 	<div
 		class="flex w-full rounded-(--radius-large) overflow-hidden relative mb-4"
