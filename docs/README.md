@@ -1,12 +1,17 @@
 # Mizuki 文档索引
 
+> [!WARNING]
+> ### ⚠️ 项目停止更新通知
+> **本项目（Mizuki）即将停止更新与维护。**  
+> 全新全面重构版本为 **[Shirone](https://github.com/lyraVoid/shirone)**（功能基本一致，架构全新升级），建议前往新项目：[https://github.com/lyraVoid/shirone](https://github.com/lyraVoid/shirone)
+
 欢迎查阅 Mizuki 的详细文档！
 
 ## 📚 文档列表
 
 ### 核心文档
 
-- **[../README.zh.md](../README.zh.md)** - 项目主文档 (简体中文)
+- **[../README.md](../README.md)** - 项目主文档 (简体中文)
   - 快速开始
   - 功能特性
   - 基础配置
@@ -24,7 +29,7 @@
 
 ### 多语言文档
 
-- **[../README.md](../README.md)** - English
+- **[../README.en.md](../README.en.md)** - English
 - **[../README.ja.md](../README.ja.md)** - 日本語  
 - **[../README.tw.md](../README.tw.md)** - 繁體中文
 
@@ -67,7 +72,7 @@
 ## 🚀 快速查找
 
 ### 我是新手，想快速开始
-→ 阅读 [主 README](../README.zh.md)
+→ 阅读 [主 README](../README.md)
 
 ### 我想部署博客
 → 阅读 [部署指南](./DEPLOYMENT.md)
@@ -109,7 +114,7 @@ docs/
 
 ### 新用户推荐阅读顺序
 
-1. [主 README](../README.zh.md) - 了解项目基本情况
+1. [主 README](../README.md) - 了解项目基本情况
 2. [部署指南](./DEPLOYMENT.md) - 选择平台并部署
 3. (可选) [内容分离指南](./CONTENT_SEPARATION.md) - 高级功能
 

@@ -4,6 +4,12 @@
 
 一個現代化、功能豐富的靜態部落格模板，基於 [Astro](https://astro.build) 構建，具有先進的功能和精美的設計。
 
+> [!WARNING]
+> ### ⚠️ 專案停止更新與遷移通知
+> **本專案（Mizuki）即將停止更新與維護。**  
+> 全新全面重構版本 **[Shirone](https://github.com/lyraVoid/shirone)** 現已發布，功能與本專案基本一致，並在架構與體驗上進行了全面重構與優化。建議前往新專案獲取最新支援與更新：  
+> 🔗 **新專案倉庫：[https://github.com/lyraVoid/shirone](https://github.com/lyraVoid/shirone)**
+
 [![Node.js >= 20](https://img.shields.io/badge/node.js-%3E%3D20-brightgreen)](https://nodejs.org/)
 [![pnpm >= 11](https://img.shields.io/badge/pnpm-%3E%3D11-blue)](https://pnpm.io/)
 [![Astro](https://img.shields.io/badge/Astro-7.1.3-orange)](https://astro.build/)
@@ -13,7 +19,7 @@
 [**🖥️ 線上演示**](https://mizuki.mysqil.com/) | [**📝 使用者文檔**](https://docs.mizuki.mysqil.com/)
 
 🌏 **README 語言:**
-[**English**](./README.md) / [**中文**](./README.zh.md) / [**日本語**](./README.ja.md) / [**繁體中文**](./README.tw.md) /
+[**中文**](./README.md) / [**English**](./README.en.md) / [**日本語**](./README.ja.md) / [**繁體中文**](./README.tw.md) /
 
 透過我們的綜合文檔快速開始。無論是自訂主題、配置功能，還是部署到生產環境，文檔涵蓋了您成功啟動部落格所需的所有內容。
 
