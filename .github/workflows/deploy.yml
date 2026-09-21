@@ -48,8 +48,7 @@ permissions:
   contents: read
 
 env:
-  # TODO: 替换为你的内容仓。
-  CONTENT_REPOSITORY: OWNER/shirone-content
+  CONTENT_REPOSITORY: Si-Jiu/homepage-content
   CONTENT_WORKING_COPY: .content-src
 
 jobs:
