@@ -11,10 +11,11 @@
  * bare project before anything else is installed.
  */
 
-import { existsSync } from "node:fs";
+import { existsSync, mkdtempSync, rmSync } from "node:fs";
 import { cp, mkdir, readFile, readdir, rename, writeFile } from "node:fs/promises";
 import { basename, dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
 
 const PACKAGE_ROOT = resolve(fileURLToPath(import.meta.url), "../..");
@@ -251,7 +252,7 @@ async function ensurePnpmWorkspace() {
 	log.ok("pnpm-workspace.yaml");
 }
 
-async function ensurePackageJson(packageName) {
+async function ensurePackageJson(packageName, { syncPackageManager = false } = {}) {
 	const pkgPath = join(CWD, "package.json");
 	const peers = await themePeers();
 	const packageManager = await readPackageManager();
@@ -342,9 +343,12 @@ async function ensurePackageJson(packageName) {
 		changed = true;
 	}
 
-	// Same package-manager pin as the freshly-created case, but never clobber
-	// a version the user already chose themselves.
-	if (packageManager && !pkg.packageManager) {
+	// A fresh project gets the package pin above. On an explicit `--update`,
+	// advance an older Shirone-generated pin to the current package pin too;
+	// otherwise the project would keep running the previous release's pnpm even
+	// after the user updated the theme. Do not touch a user's package manager
+	// during an ordinary init.
+	if (packageManager && (!pkg.packageManager || (syncPackageManager && pkg.packageManager !== packageManager))) {
 		pkg.packageManager = packageManager;
 		changed = true;
 	}
@@ -465,6 +469,70 @@ function detectPackageManager() {
 	return "pnpm";
 }
 
+/** Detect the installed pnpm outside the user's project metadata. */
+function detectCurrentPnpmVersion() {
+	const probeDir = mkdtempSync(join(tmpdir(), "shirones-pnpm-"));
+	try {
+		const result = spawnSync("pnpm", ["--version"], {
+			cwd: probeDir,
+			encoding: "utf8",
+			stdio: ["ignore", "pipe", "ignore"],
+			shell: process.platform === "win32",
+		});
+		return result.status === 0 ? result.stdout.trim() : null;
+	} finally {
+		rmSync(probeDir, { recursive: true, force: true });
+	}
+}
+
+function parsePnpmPin(packageManager) {
+	const match = packageManager?.match(/^pnpm@(.+)$/);
+	return match ? { spec: match[1], display: packageManager } : null;
+}
+
+/**
+ * Run the package manager selected by the published package.
+ *
+ * A matching local pnpm is used directly. A mismatch is deliberately not
+ * handed back to the old pnpm's self-updater: pnpm 10/11 request the obsolete
+ * `@pnpm/linux-x64` package name when the pin is pnpm 12. Corepack is the
+ * normal bootstrap path; when Corepack is not installed, npx runs the pinned
+ * pnpm package directly.
+ */
+function runPinnedPnpm(args, packageManager) {
+	const pin = parsePnpmPin(packageManager);
+	const current = detectCurrentPnpmVersion();
+	if (!pin || current === pin.spec) {
+		return spawnSync("pnpm", args, {
+			cwd: CWD,
+			stdio: "inherit",
+			shell: process.platform === "win32",
+		});
+	}
+
+	const corepack = process.platform === "win32" ? "corepack.cmd" : "corepack";
+	const corepackAvailable = spawnSync(corepack, ["--version"], {
+		stdio: "ignore",
+		shell: process.platform === "win32",
+	}).status === 0;
+	if (corepackAvailable) {
+		log.step(`pnpm ${current ?? "unknown"} differs from ${pin.display}; using Corepack`);
+		return spawnSync(corepack, ["pnpm", ...args], {
+			cwd: CWD,
+			stdio: "inherit",
+			shell: process.platform === "win32",
+		});
+	}
+
+	const npx = process.platform === "win32" ? "npx.cmd" : "npx";
+	log.step(`Corepack not found; using npx ${pin.display}`);
+	return spawnSync(npx, ["--yes", `pnpm@${pin.spec}`, ...args], {
+		cwd: CWD,
+		stdio: "inherit",
+		shell: process.platform === "win32",
+	});
+}
+
 /**
  * Install the project's dependencies so `init` works from a completely empty
  * directory: writing the missing peer dependencies into package.json is only
@@ -474,17 +542,21 @@ function detectPackageManager() {
  */
 async function installDependencies() {
 	const pm = detectPackageManager();
+	const packageManager = await readPackageManager();
 	// pnpm treats a CI environment as `--frozen-lockfile`, and this install
 	// exists precisely because package.json just changed — so opt out.
 	const args = pm === "pnpm" ? ["install", "--no-frozen-lockfile"] : ["install"];
-	log.step(`installing dependencies with ${pm} ${args.slice(1).join(" ")}`);
-	const result = spawnSync(pm, args, {
-		cwd: CWD,
-		stdio: "inherit",
-		shell: process.platform === "win32",
-	});
+	const label = pm === "pnpm" && packageManager ? packageManager : pm;
+	log.step(`installing dependencies with ${label} ${args.slice(1).join(" ")}`);
+	const result = pm === "pnpm"
+		? runPinnedPnpm(args, packageManager)
+		: spawnSync(pm, args, {
+			cwd: CWD,
+			stdio: "inherit",
+			shell: process.platform === "win32",
+		});
 	if (result.status !== 0) {
-		log.err(`${pm} install failed — run it manually and check the output above`);
+		log.err(`${label} install failed — run it manually and check the output above`);
 		process.exitCode = 1;
 		return false;
 	}
@@ -943,7 +1015,7 @@ async function checkAndUpdate(packageName, { apply }) {
 	await mkdir(join(CWD, "src/icons"), { recursive: true });
 	await installRootFiles({ force: false });
 	await ensureTsConfig(packageName, { force: false });
-	const addedDeps = await ensurePackageJson(packageName);
+	const addedDeps = await ensurePackageJson(packageName, { syncPackageManager: true });
 	await ensurePnpmWorkspace();
 
 	if (addedDeps.length > 0) {
@@ -1037,6 +1109,13 @@ async function init(args) {
 	}
 
 	const postCount = await countFiles(join(CWD, CONTENT_ROOT, "content/posts"));
+	const packageManager = await readPackageManager();
+	const pin = parsePnpmPin(packageManager);
+	const nextCommands = pin
+		? `  ${colours.dim}pnpm dev${colours.reset}
+  ${colours.dim}If that fails: corepack pnpm dev${colours.reset}
+  ${colours.dim}If that also fails: npx --yes pnpm@${pin.spec} dev${colours.reset}`
+		: `  ${colours.dim}pnpm dev${colours.reset}`;
 
 	console.log(`
 ${colours.green}${colours.bold}Done.${colours.reset} ${postCount} example content files installed.
@@ -1052,7 +1131,7 @@ ${colours.bold}Project layout${colours.reset}
   public/                   static assets
 
 ${colours.bold}Next${colours.reset}
-  ${colours.dim}pnpm dev${colours.reset}
+${nextCommands}
 `);
 }
 
