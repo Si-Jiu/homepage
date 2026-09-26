@@ -517,15 +517,17 @@ function runPinnedPnpm(args, packageManager) {
 	}).status === 0;
 	if (corepackAvailable) {
 		log.step(`pnpm ${current ?? "unknown"} differs from ${pin.display}; using Corepack`);
-		return spawnSync(corepack, ["pnpm", ...args], {
+		const result = spawnSync(corepack, ["pnpm", ...args], {
 			cwd: CWD,
 			stdio: "inherit",
 			shell: process.platform === "win32",
 		});
+		if (result.status === 0) return result;
+		log.warn(`Corepack was found but failed to run ${pin.display}; trying npx fallback`);
 	}
 
 	const npx = process.platform === "win32" ? "npx.cmd" : "npx";
-	log.step(`Corepack not found; using npx ${pin.display}`);
+	log.step(`Corepack unavailable; using npx ${pin.display}`);
 	return spawnSync(npx, ["--yes", `pnpm@${pin.spec}`, ...args], {
 		cwd: CWD,
 		stdio: "inherit",
@@ -717,8 +719,7 @@ async function clearStarterFiles() {
 			const contents = await readFile(file, "utf8");
 			const isStarter =
 				contents.includes("Welcome") ||
-				contents.includes("astro.build") ||
-				contents.includes("<slot />");
+				contents.includes("astro.build");
 			if (!isStarter) {
 				log.warn(`${relativePath} is yours — left in place, but it overrides the theme`);
 				continue;
@@ -844,6 +845,87 @@ function topKeys(body) {
 	return keys;
 }
 
+/** Top-level field values, normalized only for whitespace, not string content. */
+function topFieldValues(body) {
+	const fields = new Map();
+	let depth = 0;
+	let fieldName = null;
+	let valueStart = -1;
+	let i = 0;
+	const save = (end) => {
+		if (fieldName !== null) {
+			fields.set(fieldName, body.slice(valueStart, end).replace(/\s+/g, " ").trim());
+			fieldName = null;
+		}
+	};
+	while (i < body.length) {
+		const ch = body[i];
+		if (ch === '"' || ch === "'" || ch === "`") {
+			i = skipString(body, i) + 1;
+			continue;
+		}
+		if (ch === "/" && body[i + 1] === "/") {
+			while (i < body.length && body[i] !== "\n") i++;
+			continue;
+		}
+		if (ch === "/" && body[i + 1] === "*") {
+			const end = body.indexOf("*/", i + 2);
+			i = end === -1 ? body.length : end + 2;
+			continue;
+		}
+		if (ch === "{" || ch === "[" || ch === "(") {
+			depth++;
+			i++;
+			continue;
+		}
+		if (ch === "}" || ch === "]" || ch === ")") {
+			depth--;
+			i++;
+			continue;
+		}
+		if (depth === 0 && fieldName === null && ch === ":") {
+			let j = i - 1;
+			while (j >= 0 && /\s/.test(body[j])) j--;
+			let k = j;
+			while (k >= 0 && /[A-Za-z0-9_$]/.test(body[k])) k--;
+			const key = body.slice(k + 1, j + 1);
+			if (key && !/^\d+$/.test(key)) {
+				fieldName = key;
+				valueStart = i + 1;
+			}
+		}
+		if (depth === 0 && ch === ",") save(i);
+		i++;
+	}
+	save(body.length);
+	return fields;
+}
+
+/** Values for every `export const NAME = …{…}` object in a source. */
+function objectFieldValues(src) {
+	const fields = new Map();
+	const re = /export\s+const\s+([A-Za-z0-9_$]+)/g;
+	for (const m of src.matchAll(re)) {
+		let open = -1;
+		for (let i = m.index + m[0].length; i < src.length; i++) {
+			const ch = src[i];
+			if (ch === '"' || ch === "'" || ch === "`") {
+				i = skipString(src, i);
+				continue;
+			}
+			if (ch === "{") {
+				open = i;
+				break;
+			}
+		}
+		if (open !== -1) {
+			const body = balancedBody(src, open);
+			if (body !== null) fields.set(m[1], topFieldValues(body));
+		}
+	}
+	return fields;
+}
+
 /**
  * Top-level keys of every `export const NAME = …{…}` object in a source.
  * The declaration may carry a type annotation and wrap the object in a call
@@ -886,6 +968,8 @@ async function diffConfigFile(tplPath, usrPath) {
 
 	const tplFields = objectFieldKeys(tpl);
 	const usrFields = objectFieldKeys(usr);
+	const tplValues = objectFieldValues(tpl);
+	const usrValues = objectFieldValues(usr);
 	const missingFields = {};
 	for (const [name, keys] of tplFields) {
 		const usr = usrFields.get(name) ?? new Set();
@@ -898,8 +982,16 @@ async function diffConfigFile(tplPath, usrPath) {
 		const extra = [...keys].filter((k) => !tplSet.has(k));
 		if (extra.length) extraFields[name] = extra;
 	}
+	const changedFields = {};
+	for (const [name, values] of tplValues) {
+		const userValues = usrValues.get(name) ?? new Map();
+		const changed = [...values.keys()].filter(
+			(key) => userValues.has(key) && userValues.get(key) !== values.get(key),
+		);
+		if (changed.length) changedFields[name] = changed;
+	}
 
-	return { missingExports, extraExports, missingFields, extraFields };
+	return { missingExports, extraExports, missingFields, extraFields, changedFields };
 }
 
 /** Collect the differences between the template config and the user's copy. */
@@ -925,7 +1017,8 @@ async function checkState() {
 			diff.missingExports.length ||
 			diff.extraExports.length ||
 			Object.keys(diff.missingFields).length ||
-			Object.keys(diff.extraFields).length
+			Object.keys(diff.extraFields).length ||
+			Object.keys(diff.changedFields).length
 		) {
 			fieldDiffs.push({ rel, ...diff });
 		}
@@ -981,6 +1074,8 @@ async function checkAndUpdate(packageName, { apply }) {
 				console.log(`    ${colours.dim}− ${name}: missing field(s): ${keys.join(", ")}${colours.reset}`);
 			for (const [name, keys] of Object.entries(d.extraFields))
 				console.log(`    ${colours.dim}− ${name}: field(s) not in template: ${keys.join(", ")}${colours.reset}`);
+			for (const [name, keys] of Object.entries(d.changedFields))
+				console.log(`    ${colours.dim}− ${name}: value(s) changed: ${keys.join(", ")}${colours.reset}`);
 		}
 
 		if (!apply) {
@@ -1019,7 +1114,7 @@ async function checkAndUpdate(packageName, { apply }) {
 	await ensurePnpmWorkspace();
 
 	if (addedDeps.length > 0) {
-		await installDependencies();
+		if (!(await installDependencies())) return;
 	} else {
 		log.skip("dependencies already declared");
 	}
@@ -1103,7 +1198,7 @@ async function init(args) {
 	// 6. If package.json was created or gained dependencies, install them now —
 	//    that is what lets `init` work from a completely empty directory.
 	if (addedDeps.length > 0) {
-		await installDependencies();
+		if (!(await installDependencies())) return;
 	} else {
 		log.skip("dependencies already declared");
 	}

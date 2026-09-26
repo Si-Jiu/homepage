@@ -238,6 +238,16 @@ export const viteBuildShared: NonNullable<
 			) {
 				return;
 			}
+			// Astro's MDX bridge injects this directive before Rolldown sees the
+			// module; the directive is consumed by Astro and is not meaningful in
+			// the final browser bundle. Remove this filter once the bridge stops
+			// forwarding `astro:head-inject` to the bundler.
+			if (
+				warning.code === "MODULE_LEVEL_DIRECTIVE" &&
+				warning.message.includes('"use astro:head-inject"')
+			) {
+				return;
+			}
 			defaultHandler(warning);
 		},
 	},

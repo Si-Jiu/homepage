@@ -81,7 +81,7 @@ comment: true
 
 ## 3. Post Encryption
 
-Shirone provides client-side post encryption. For private journals or restricted articles, specify a password in frontmatter:
+Shirone provides client-side post encryption. This is a static password gate, not server-side access control: the encrypted payload and asset URLs remain publicly downloadable, so do not use it for genuinely confidential files or regulated secrets. For private journals or restricted articles, specify a password in frontmatter:
 
 ```yaml
 ---
