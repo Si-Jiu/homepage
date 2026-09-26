@@ -28,7 +28,7 @@ export type SidebarSide = "left" | "right";
  */
 export type SidebarPage =
 	| "notFound" // 404 页面
-	| "home" // 首页（[...page].astro 及其分页）
+	| "home" // 首页
 	| "archive" // 归档
 	| "friends" // 友链
 	| "moments" // 动态
@@ -46,7 +46,8 @@ export type SidebarPage =
 	| "series" // 系列索引
 	| "rss" // RSS 订阅指南
 	| "atom" // Atom 订阅指南
-	| "post"; // 文章详情页
+	| "post" // 文章详情页
+	| "posts"; // 博客（[...page].astro 及其分页）
 
 /** 资料卡（内容来自 profileConfig，无 WidgetLayout 标题外壳） */
 export interface ProfileWidget {

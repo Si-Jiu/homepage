@@ -331,6 +331,8 @@ enum I18nKey {
 	feedHowToUseDesc = "feedHowToUseDesc",
 	feedOpenXml = "feedOpenXml",
 	feedRecentPosts = "feedRecentPosts",
+
+	posts = "posts",
 }
 
 export default I18nKey;

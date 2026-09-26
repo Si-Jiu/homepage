@@ -22,10 +22,12 @@ const { currentPostCategory } = Astro.props;
 
 const categories = await getCategoryList();
 const homeUrl = url("/");
+const postsUrl = url("/posts/");
 const archiveUrl = url("/archive/");
 
 const pathname = Astro.url.pathname;
 const isHome = pathsEqual(pathname, homeUrl);
+const isPosts = pathsEqual(pathname, postsUrl);
 const isArchive = pathsEqual(pathname, archiveUrl);
 const postCategory = (currentPostCategory || "").trim();
 
@@ -53,7 +55,15 @@ const softCategory = !isHome && !isArchive && postCategory ? postCategory : "";
 				label={i18n(I18nKey.home)}
 				class="shrink-0"
 			>
-				<Icon name="material-symbols:home" class="text-lg" aria-hidden="true" />
+				<Icon name="material-symbols:home" class="text-lg" aria-hidden="true" /> {i18n(I18nKey.home)}
+			</Chip>
+			<Chip
+				variant="tonal"
+				href={postsUrl}
+				selected={isPosts}
+				class="shrink-0"
+			>
+				{i18n(I18nKey.posts)}
 			</Chip>
 			<Chip
 				variant="tonal"
@@ -128,6 +138,8 @@ const softCategory = !isHome && !isArchive && postCategory ? postCategory : "";
 			active = `category=${categoryParam}`;
 		} else if (pathname === "/archive") {
 			active = "__archive__";
+		} else if (pathname === "/posts") {
+			active = "__posts__";
 		} else {
 			active = "";
 		}
@@ -149,6 +161,8 @@ const softCategory = !isHome && !isArchive && postCategory ? postCategory : "";
 					? normalizedHref === "/"
 					: active === "__archive__"
 						? href.includes("/archive/") && !href.includes("category=") && !href.includes("tag=")
+						: active === "__posts__"
+							? normalizedHref === "/posts"
 						: href.includes(`category=${encodeURIComponent(categoryParam!)}`);
 			pill.classList.toggle("m3-chip--selected", isActive);
 

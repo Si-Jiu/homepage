@@ -3,21 +3,27 @@ import Pagination from "@components/molecules/Pagination.astro";
 import PostPage from "@components/organisms/PostPage.astro";
 import type { GetStaticPaths } from "astro";
 import { postListConfig } from "@/config/postListConfig";
-import MainGridLayout from "../layouts/MainGridLayout.astro";
-import { getSortedPosts } from "../utils/content-utils";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import { getSortedPosts } from "@/utils/content-utils";
+import I18nKey from "@i18n/i18nKey";
+import { i18n } from "@i18n/translation";
+import { getSortedPostsList } from "@/utils/content-utils";
 
 export const getStaticPaths = (async ({ paginate }) => {
-	const allBlogPosts = await getSortedPosts();
-	return paginate(allBlogPosts, { pageSize: postListConfig.pageSize });
+    const allBlogPosts = await getSortedPosts();
+    return paginate(allBlogPosts, { pageSize: postListConfig.pageSize });
 }) satisfies GetStaticPaths;
 // https://github.com/withastro/astro/issues/6507#issuecomment-1489916992
 
 const { page } = Astro.props;
 
 const len = page.data.length;
+
+const sortedPostsList = await getSortedPostsList();
+const archiveSummary = `${sortedPostsList.length} ${i18n(I18nKey.postsCount)}`;
 ---
 
-<MainGridLayout page="home">
+<MainGridLayout title={i18n(I18nKey.posts)} description={archiveSummary} page="posts">
     <PostPage page={page}></PostPage>
     <Pagination class="mx-auto onload-animation" page={page} style={`animation-delay: calc(var(--content-delay) + ${(len)*50}ms)`}></Pagination>
 </MainGridLayout>

@@ -122,11 +122,11 @@ export const LinkPresets: Record<string, NavBarLink> = {
 		icon: "material-symbols:auto-stories-outline-rounded",
 		pageKey: "series",
 	},
-	About: {
-		name: i18n(I18nKey.about),
-		url: "/about/",
-		icon: "material-symbols:info-outline-rounded",
-		pageKey: "about",
+	Posts: {
+		name: i18n(I18nKey.posts),
+		url: "/posts/",
+		icon: "material-symbols:article-outline-rounded",
+		pageKey: "posts",
 	},
 	GitHub: {
 		name: "GitHub",
