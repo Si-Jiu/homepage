@@ -746,6 +746,18 @@ test.describe("Markdown syntax runtime loading", () => {
 		const toggle = page.locator(".collapse-toggle-btn").first();
 		await expect(toggle).toBeVisible();
 		await expect(toggle).toHaveAttribute("aria-label", "Expand code block");
+		await expect(toggle.locator("svg")).toHaveCSS("transform", "none");
+
+		await toggle.click();
+		await expect(toggle).toHaveAttribute("aria-label", "Collapse code block");
+		await expect(toggle.locator("svg")).toHaveCSS(
+			"transform",
+			"matrix(-1, 0, 0, -1, 0, 0)",
+		);
+
+		await toggle.click();
+		await expect(toggle).toHaveAttribute("aria-label", "Expand code block");
+		await expect(toggle.locator("svg")).toHaveCSS("transform", "none");
 
 		expect(
 			requests.some((url) => optionalRuntimeModules.codeCollapse.test(url)),
