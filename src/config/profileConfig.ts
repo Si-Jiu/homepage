@@ -12,19 +12,19 @@ export const profileConfig: ProfileConfig = withUserConfig("profile", {
 	links: [
 		{
 			name: "X",
-			icon: "fa6-brands:x-twitter", // Visit https://icones.js.org/ for icon codes
+			icon: "fa7-brands:x-twitter", // Visit https://icones.js.org/ for icon codes
 			// You will need to install the corresponding icon set if it's not already included
 			// `pnpm add @iconify-json/<icon-set-name>`
 			url: "https://x.com",
 		},
 		{
 			name: "Steam",
-			icon: "fa6-brands:steam",
+			icon: "fa7-brands:steam",
 			url: "https://store.steampowered.com",
 		},
 		{
 			name: "GitHub",
-			icon: "fa6-brands:github",
+			icon: "fa7-brands:github",
 			url: "https://github.com/LyraVoid/Shirone",
 		},
 	],

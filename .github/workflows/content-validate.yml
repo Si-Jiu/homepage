@@ -98,7 +98,6 @@ jobs:
         run: |
           set -euo pipefail
           pnpm content:sync
-          node scripts/icons/generate-local-icons.mjs
           pnpm exec astro sync
 
       - name: Summarize

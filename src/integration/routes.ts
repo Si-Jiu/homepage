@@ -1,6 +1,6 @@
 import { existsSync, readdirSync } from "node:fs";
 import { join, relative } from "node:path";
-import { normalisePath } from "./paths.ts";
+import { normalisePath } from "./resolve/paths.ts";
 
 export interface ShironeRoute {
 	/** Route pattern passed to `injectRoute`. */
@@ -107,6 +107,7 @@ export function filterRoutes(
 		exclude.map((value) => (value.startsWith("/") ? value : `/${value}`)),
 	);
 	return routes.filter(
-		(route) => !normalised.has(route.pattern) && !normalised.has(`/${route.source}`),
+		(route) =>
+			!normalised.has(route.pattern) && !normalised.has(`/${route.source}`),
 	);
 }
