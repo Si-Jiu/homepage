@@ -122,6 +122,12 @@ export const LinkPresets: Record<string, NavBarLink> = {
 		icon: "material-symbols:auto-stories-outline-rounded",
 		pageKey: "series",
 	},
+	About: {
+		name: i18n(I18nKey.about),
+		url: "/about/",
+		icon: "material-symbols:info-outline-rounded",
+		pageKey: "about",
+	},
 	Posts: {
 		name: i18n(I18nKey.posts),
 		url: "/posts/",
@@ -140,7 +146,6 @@ export const LinkPresets: Record<string, NavBarLink> = {
 const defaultNavBarConfig: NavBarConfig = {
 	links: [
 		LinkPresets.Home,
-		LinkPresets.Posts,
 		LinkPresets.Archive,
 		LinkPresets.Friends,
 		LinkPresets.Moments,
@@ -160,6 +165,7 @@ const defaultNavBarConfig: NavBarConfig = {
 				// 需要时取消注释即可
 				// LinkPresets.Categories,
 				// LinkPresets.Tags,
+				LinkPresets.About,
 				LinkPresets.GitHub,
 			],
 		},
