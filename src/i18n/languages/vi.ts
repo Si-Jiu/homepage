@@ -194,6 +194,7 @@ export const vi: Translation = {
 	[Key.minutesCount]: "phút đọc",
 	[Key.postCount]: "bài viết",
 	[Key.postsCount]: "bài viết",
+	[Key.posts]: "Bài viết",
 	[Key.categoriesCount]: "danh mục",
 	[Key.tagsCount]: "thẻ",
 	[Key.noData]: "Không có dữ liệu",

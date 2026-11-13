@@ -22,19 +22,21 @@ const { currentPostCategory } = Astro.props;
 
 const categories = await getCategoryList();
 const homeUrl = url("/");
+const postsUrl = url("/posts/");
 const archiveUrl = url("/archive/");
 
 const pathname = Astro.url.pathname;
 const isHome = pathsEqual(pathname, homeUrl);
+const isPosts = pathname === postsUrl;
 const isArchive = pathsEqual(pathname, archiveUrl);
 const postCategory = (currentPostCategory || "").trim();
 
 // SSR 初始高亮：
-// - 首页 → home 强高亮；归档 → archive 强高亮；
+// - 首页 → home 强高亮；文章 → posts 强高亮;归档 → archive 强高亮；
 // - 文章页 → 所属分类弱高亮（soft）；
 // - 其它（关于等）→ 无高亮。
 // query 分类（?category=）在静态站点构建期不可知，由客户端校正。
-const softCategory = !isHome && !isArchive && postCategory ? postCategory : "";
+const softCategory = !isHome && !isPosts && !isArchive && postCategory ? postCategory : "";
 ---
 
 <!-- nav landmark：分类栏静态渲染在 Swup 容器外，需要独立 landmark 才能通过
@@ -54,6 +56,14 @@ const softCategory = !isHome && !isArchive && postCategory ? postCategory : "";
 				class="shrink-0"
 			>
 				<Icon icon="material-symbols:home" class="text-lg" aria-hidden="true" />
+			</Chip>
+			<Chip
+				variant="tonal"
+				href={postsUrl}
+				selected={isPosts}
+				class="shrink-0"
+			>
+				{i18n(I18nKey.posts)}
 			</Chip>
 			<Chip
 				variant="tonal"
@@ -126,6 +136,8 @@ const softCategory = !isHome && !isArchive && postCategory ? postCategory : "";
 			active = "__home__";
 		} else if (categoryParam) {
 			active = `category=${categoryParam}`;
+		} else if (pathname === "/posts") {
+			active = "__posts__";
 		} else if (pathname === "/archive") {
 			active = "__archive__";
 		} else {
@@ -147,6 +159,8 @@ const softCategory = !isHome && !isArchive && postCategory ? postCategory : "";
 					? false
 					: active === "__home__"
 					? normalizedHref === "/"
+					: active === "__posts__"
+						? normalizedHref === pathname
 					: active === "__archive__"
 						? href.includes("/archive/") && !href.includes("category=") && !href.includes("tag=")
 						: href.includes(`category=${encodeURIComponent(categoryParam!)}`);

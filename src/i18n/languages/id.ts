@@ -196,6 +196,7 @@ export const id: Translation = {
 	[Key.minutesCount]: "menit",
 	[Key.postCount]: "postingan",
 	[Key.postsCount]: "postingan",
+	[Key.posts]: "Postingan",
 	[Key.categoriesCount]: "kategori",
 	[Key.tagsCount]: "tag",
 	[Key.noData]: "Tidak ada data",

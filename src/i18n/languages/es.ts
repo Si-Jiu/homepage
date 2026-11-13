@@ -194,6 +194,7 @@ export const es: Translation = {
 	[Key.minutesCount]: "minutos",
 	[Key.postCount]: "publicación",
 	[Key.postsCount]: "publicaciones",
+	[Key.posts]: "Publicaciones",
 	[Key.categoriesCount]: "categorías",
 	[Key.tagsCount]: "etiquetas",
 	[Key.noData]: "Sin datos",

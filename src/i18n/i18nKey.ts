@@ -183,6 +183,7 @@ enum I18nKey {
 	minutesCount = "minutesCount",
 	postCount = "postCount",
 	postsCount = "postsCount",
+	posts = "posts",
 	categoriesCount = "categoriesCount",
 	tagsCount = "tagsCount",
 	noData = "noData",

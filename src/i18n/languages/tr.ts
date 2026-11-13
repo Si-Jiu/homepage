@@ -194,6 +194,7 @@ export const tr: Translation = {
 	[Key.minutesCount]: "dakika",
 	[Key.postCount]: "gönderi",
 	[Key.postsCount]: "gönderiler",
+	[Key.posts]: "Gönderiler",
 	[Key.categoriesCount]: "kategori",
 	[Key.tagsCount]: "etiket",
 	[Key.noData]: "Veri yok",
