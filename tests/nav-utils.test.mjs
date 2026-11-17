@@ -30,6 +30,17 @@ test("resolvePageKey handles root deployment", () => {
 		resolvePageKey(new URL("https://example.com/series/media-embeds/")),
 		"series",
 	);
+	// Same contract for `posts`: the list, its pagination pages, and every
+	// article detail belong to the Posts nav entry.
+	assert.equal(resolvePageKey(new URL("https://example.com/posts/")), "posts");
+	assert.equal(
+		resolvePageKey(new URL("https://example.com/posts/2/")),
+		"posts",
+	);
+	assert.equal(
+		resolvePageKey(new URL("https://example.com/posts/guide/")),
+		"posts",
+	);
 	assert.equal(
 		resolvePageKey(new URL("https://example.com/archive/?category=Guides")),
 		"categories",
@@ -60,6 +71,10 @@ test("resolvePageKey handles subpath deployment with base override", () => {
 			base,
 		),
 		"albums",
+	);
+	assert.equal(
+		resolvePageKey(new URL("https://example.com/Shirone/posts/guide/"), base),
+		"posts",
 	);
 	assert.equal(
 		resolvePageKey(
